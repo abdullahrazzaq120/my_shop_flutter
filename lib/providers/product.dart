@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
@@ -20,24 +18,23 @@ class Product with ChangeNotifier {
     this.isFavourite = false,
   });
 
-  void toggleFavouriteStatus() async {
+  void toggleFavouriteStatus(String token, String userId) async {
     final oldFavourite = isFavourite;
     isFavourite = !isFavourite;
     notifyListeners();
     final url =
-        'https://myshopflutter-3d23b-default-rtdb.firebaseio.com/products/$id.json';
+        'https://myshopflutter-3d23b-default-rtdb.firebaseio.com/userFavorites/$userId/$id.json?auth=$token';
     try {
-      final response = await http.patch(
+      final response = await http.put(
         Uri.parse(url),
-        body: json.encode({
-          'isFavourite': isFavourite,
-        }),
+        body: isFavourite.toString(),
       );
       if (response.statusCode >= 400) {
         isFavourite = oldFavourite;
         notifyListeners();
       }
     } catch (error) {
+      print(error);
       isFavourite = oldFavourite;
       notifyListeners();
     }

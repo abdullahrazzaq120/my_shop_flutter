@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:my_shop_flutter/providers/auth.dart';
 import 'package:my_shop_flutter/providers/cart.dart';
 import 'package:my_shop_flutter/providers/product.dart';
 import 'package:my_shop_flutter/screens/product_detail_screen.dart';
@@ -15,6 +16,7 @@ class ProductItem extends StatelessWidget {
   Widget build(BuildContext context) {
     //listening product changing
     Product product = Provider.of<Product>(context, listen: false);
+    Auth auth = Provider.of<Auth>(context, listen: false);
     Cart cart = Provider.of<Cart>(context, listen: false);
     /*It will only print one time due to listen false*/
     print('Rebuild');
@@ -47,7 +49,7 @@ class ProductItem extends StatelessWidget {
                     p.isFavourite ? Icons.favorite : Icons.favorite_border),
                 color: p.isFavourite ? Colors.redAccent : Colors.white,
                 onPressed: () {
-                  product.toggleFavouriteStatus();
+                  product.toggleFavouriteStatus(auth.token!, auth.userId!);
                 },
               );
             },
