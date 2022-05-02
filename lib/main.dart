@@ -8,6 +8,7 @@ import 'package:my_shop_flutter/screens/edit_product_screen.dart';
 import 'package:my_shop_flutter/screens/orders_screen.dart';
 import 'package:my_shop_flutter/screens/product_detail_screen.dart';
 import 'package:my_shop_flutter/screens/products_overview_screen.dart';
+import 'package:my_shop_flutter/screens/splash_screen.dart';
 import 'package:provider/provider.dart';
 
 import 'providers/orders.dart';
@@ -42,8 +43,9 @@ class MyApp extends StatelessWidget {
           update: (ctx, auth, previousOrders) => Orders(
             auth.token,
             previousOrders == null ? [] : previousOrders.orders,
+            auth.userId,
           ),
-          create: (ctx) => Orders('', []),
+          create: (ctx) => Orders('', [], ''),
         ),
       ],
       child: Consumer<Auth>(
@@ -53,7 +55,16 @@ class MyApp extends StatelessWidget {
           theme: ThemeData(
             primarySwatch: Colors.blue,
           ),
-          home: auth.isAuth ? ProductsOverviewScreen() : AuthScreen(),
+          home: auth.isAuth
+              ? ProductsOverviewScreen()
+              : FutureBuilder(
+                  future: auth.tryAutoLogin(),
+                  builder: (ctx, authResultSnapshot) =>
+                      authResultSnapshot.connectionState ==
+                              ConnectionState.waiting
+                          ? SplashScreen()
+                          : AuthScreen(),
+                ),
           routes: {
             ProductDetailScreen.routeName: (ctx) => ProductDetailScreen(),
             ProductsOverviewScreen.routeName: (ctx) => ProductsOverviewScreen(),
